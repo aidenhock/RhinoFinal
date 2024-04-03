@@ -11,7 +11,9 @@ import { initializeApp } from "firebase/app";
 //   measurementId: "G-1C78KFH4GP"
 // };
 import React from 'react';
-import { Container, Row, Col, Card, Navbar, Nav, Form, FormControl, Button } from 'react-bootstrap';
+import NavbarComponent from './components/NavbarComponent';
+import SearchBarComponent from './components/SearchBarComponent';
+import LocationsList from './components/LocationsList';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
@@ -28,45 +30,17 @@ function App() {
     // ... additional locations
   ];
 
+  // Dummy function for handling search, replace with your actual search handling logic
+  const handleSearch = searchTerm => {
+    console.log(`Search for: ${searchTerm}`);
+    // Implement search functionality here
+  };
+
   return (
     <>
-      <Navbar bg="dark" variant="dark" expand="lg">
-        <Container>
-          <Navbar.Brand href="#home">RHINOS LOCATION</Navbar.Brand>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
-          <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="me-auto">
-              <Nav.Link href="#home">Home</Nav.Link>
-              <Nav.Link href="#locations">Locations</Nav.Link>
-              <Nav.Link href="#about">About Me</Nav.Link>
-            </Nav>
-          </Navbar.Collapse>
-        </Container>
-      </Navbar>
-
-      {/* Search bar below the navigation bar */}
-      <Container style={{ marginTop: '1rem' }}>
-        <Form className="d-flex">
-          <FormControl type="text" placeholder="Search" className="mr-2" />
-          <Button variant="outline-success">Search</Button>
-        </Form>
-      </Container>
-
-      <Container style={{ marginTop: '2rem' }}>
-        <Row>
-          {locations.map((location) => (
-            <Col md={4} key={location.id} style={{ marginBottom: '2rem' }}>
-              <Card>
-                <Card.Header>{location.title}</Card.Header>
-                <Card.Img variant="top" src={location.image} />
-                <Card.Footer>
-                  {location.city}
-                </Card.Footer>
-              </Card>
-            </Col>
-          ))}
-        </Row>
-      </Container>
+      <NavbarComponent />
+      <SearchBarComponent onSearch={handleSearch} />
+      <LocationsList locations={locations} />
     </>
   );
 }
