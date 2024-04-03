@@ -1,0 +1,3 @@
+Packages needed:
+
+npm install prop-types
