@@ -1,3 +1,4 @@
 Packages needed:
 
 npm install prop-types
+npm install react-bootstrap bootstrap
