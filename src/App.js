@@ -11,38 +11,34 @@ import { initializeApp } from "firebase/app";
 //   measurementId: "G-1C78KFH4GP"
 // };
 import React from 'react';
-import NavbarComponent from './components/NavbarComponent';
 import SearchBarComponent from './components/SearchBarComponent';
 import LocationsList from './components/LocationsList';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-function App() {
-  const locations = [
-    // Placeholder data for locations
-    { id: 1, title: "Location Title", city: "City, CA", image: "https://via.placeholder.com/150" },
-    { id: 2, title: "Location Title", city: "City, CA", image: "https://via.placeholder.com/150" },
-    { id: 3, title: "Location Title", city: "City, CA", image: "https://via.placeholder.com/150" },
-    { id: 4, title: "Location Title", city: "City, CA", image: "https://via.placeholder.com/150" },
-    { id: 5, title: "Location Title", city: "City, CA", image: "https://via.placeholder.com/150" },
-    { id: 6, title: "Location Title", city: "City, CA", image: "https://via.placeholder.com/150" },
-    { id: 7, title: "Location Title", city: "City, CA", image: "https://via.placeholder.com/150" },
-      
-    // ... additional locations
-  ];
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import NavbarComponent from './components/NavbarComponent';
+import HomePage from './pages/HomePage';
+import LocationPage from './pages/LocationPage';
+import AboutPage from './pages/AboutPage';
 
-  // Dummy function for handling search, replace with your actual search handling logic
+const App = () => {
+  // Function for handling search will go here
   const handleSearch = searchTerm => {
-    console.log(`Search for: ${searchTerm}`);
-    // Implement search functionality here
+    console.log(`Searching for: ${searchTerm}`);
+    // Implement your search logic or update state with the search term
   };
 
   return (
-    <>
+    <Router>
       <NavbarComponent />
-      <SearchBarComponent onSearch={handleSearch} />
-      <LocationsList locations={locations} />
-    </>
+      <Routes>
+        <Route path="/" element={<HomePage onSearch={handleSearch} />} />
+        <Route path="/locations/:id" element={<LocationPage />} />
+        <Route path="/about" element={<AboutPage />} />
+        {/* Add other routes here as needed */}
+      </Routes>
+    </Router>
   );
-}
+};
 
 export default App;
