@@ -11,20 +11,10 @@ import { initializeApp } from "firebase/app";
 //   measurementId: "G-1C78KFH4GP"
 // };
 
-<<<<<<< HEAD
 import React, { useState, useEffect } from 'react';
-import LocationsList from './components/LocationsList';
-import 'bootstrap/dist/css/bootstrap.min.css';
-=======
-import React from 'react';
 import LocationsList from './components/LocationsList';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './components/SearchBarComponent.css'; // Correct path to your custom CSS
-
-
-
-import React, { useState, useEffect } from 'react';
->>>>>>> 251b2acc83c6e2921ff11a3a8fab71d091ff7bca
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import NavbarComponent from './components/NavbarComponent';
 import HomePage from './pages/HomePage';
