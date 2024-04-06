@@ -11,12 +11,6 @@ import { initializeApp } from "firebase/app";
 //   measurementId: "G-1C78KFH4GP"
 // };
 
-import React from 'react';
-import LocationsList from './components/LocationsList';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './components/SearchBarComponent.css'; // Correct path to your custom CSS
-
-
 
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
@@ -26,8 +20,6 @@ import LocationPage from './pages/LocationPage';
 import AboutPage from './pages/AboutPage';
 import SecurityPage from './security/SecurityPage';
 import { isSessionValid } from './security/SessionManager';
-
-
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(isSessionValid());
