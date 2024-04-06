@@ -11,6 +11,7 @@ const NavbarComponent = () => (
         <Nav className="me-auto">
           <Nav.Link as={Link} to="/">Home</Nav.Link>
           <Nav.Link as={Link} to="/about">About Me</Nav.Link>
+          <Nav.Link as={Link} to="/manage">Manage</Nav.Link> 
           {/* You can add more Nav.Link here as needed */}
         </Nav>
       </Navbar.Collapse>

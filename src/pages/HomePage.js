@@ -1,20 +1,28 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import SearchBarComponent from '../components/SearchBarComponent';
 import LocationsList from '../components/LocationsList';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../firebase'; // Ensure this path is correct
 
 const HomePage = ({ onSearch }) => {
-    const locations = [
-        // Placeholder data for locations
-        { id: 1, title: "Location Title", city: "City, CA", image: "https://via.placeholder.com/150" },
-        { id: 2, title: "Location Title", city: "City, CA", image: "https://via.placeholder.com/150" },
-        { id: 3, title: "Location Title", city: "City, CA", image: "https://via.placeholder.com/150" },
-        { id: 4, title: "Location Title", city: "City, CA", image: "https://via.placeholder.com/150" },
-        { id: 5, title: "Location Title", city: "City, CA", image: "https://via.placeholder.com/150" },
-        { id: 6, title: "Location Title", city: "City, CA", image: "https://via.placeholder.com/150" },
-        { id: 7, title: "Location Title", city: "City, CA", image: "https://via.placeholder.com/150" },
-          
-        // ... additional locations
-      ];
+  const [locations, setLocations] = useState([]);
+
+  useEffect(() => {
+    const fetchListings = async () => {
+      const querySnapshot = await getDocs(collection(db, 'listings'));
+      const locationData = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        // Ensure the property names match those expected by LocationCard and LocationsList
+        image: doc.data().pictures[0] || "https://via.placeholder.com/150",
+        city: doc.data().cityState, // Assuming cityState is the property in your firestore
+        title: doc.data().title,
+      }));
+      setLocations(locationData);
+    };
+
+    fetchListings();
+  }, []);
 
   return (
     <>

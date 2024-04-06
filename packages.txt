@@ -3,3 +3,5 @@ Packages needed:
 npm install prop-types
 npm install react-bootstrap bootstrap
 npm install react-router-dom
+npm install firebase
+npm install firebase/storage
