@@ -13,6 +13,7 @@ import { initializeApp } from "firebase/app";
 
 
 import React, { useState, useEffect } from 'react';
+>>>>>>> 251b2acc83c6e2921ff11a3a8fab71d091ff7bca
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import NavbarComponent from './components/NavbarComponent';
 import HomePage from './pages/HomePage';
