@@ -5,12 +5,12 @@ import './NavbarComponent.css'; // Make sure to include this
 const NavbarComponent = () => {
   return (
     <Navbar bg="dark" variant="dark" className="flex-column text-center">
-      <Navbar.Brand  className="justify-content-center mb-0 w-100">
+      <Navbar.Brand href="/" className="justify-content-center mb-0 w-100">
          RHINO LOCATIONS
       </Navbar.Brand>
       <Nav className="justify-content-center w-100">
         <Nav.Link href="/">LOCATIONS</Nav.Link>
-        <Nav.Link href="/about-me">ABOUT ME</Nav.Link>
+        <Nav.Link href="/about">ABOUT ME</Nav.Link>
       </Nav>
     </Navbar>
   );

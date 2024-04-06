@@ -23,8 +23,6 @@ import AboutPage from './pages/AboutPage';
 import SecurityPage from './security/SecurityPage';
 import { isSessionValid } from './security/SessionManager';
 
-
-
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(isSessionValid());
 
