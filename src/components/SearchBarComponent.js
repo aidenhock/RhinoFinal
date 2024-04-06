@@ -1,6 +1,8 @@
 import React from 'react';
 import { Container, Form, FormControl, Button } from 'react-bootstrap';
 import PropTypes from 'prop-types';
+import './SearchBarComponent.css'; // Import the updated CSS file
+
 
 // Stateless functional component for search bar
 const SearchBarComponent = ({ onSearch }) => {
@@ -12,18 +14,25 @@ const SearchBarComponent = ({ onSearch }) => {
   };
 
   return (
-    <Container style={{ marginTop: '1rem' }}>
-      <Form className="d-flex" onSubmit={handleSearch}>
-        <FormControl
-          type="text"
-          placeholder="Search"
-          className="me-2"
-          aria-label="Search"
-          name="search"
-        />
-        <Button variant="outline-success" type="submit">Search</Button>
-      </Form>
-    </Container>
+<Container className="search-bar-container">
+  <Form className="d-flex" onSubmit={handleSearch}>
+    <FormControl
+      type="search"
+      placeholder=""
+      className="search-input"
+      aria-label="Search"
+      name="search"
+    />
+  <Button type="submit" className="search-button">
+    Search
+  </Button>
+
+  </Form>
+</Container>
+
+
+
+
   );
 };
 
