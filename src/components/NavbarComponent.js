@@ -1,7 +1,8 @@
 import React from 'react';
-import { Navbar, Container, Nav } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Container, Navbar, Nav } from 'react-bootstrap';
+import './NavbarComponent.css'; // Make sure to include this
 
+<<<<<<< HEAD
 const NavbarComponent = () => (
   <Navbar bg="dark" variant="dark" expand="lg">
     <Container>
@@ -18,5 +19,20 @@ const NavbarComponent = () => (
     </Container>
   </Navbar>
 );
+=======
+const NavbarComponent = () => {
+  return (
+    <Navbar bg="dark" variant="dark" className="flex-column text-center">
+      <Navbar.Brand href="/" className="justify-content-center mb-0 w-100">
+         RHINO LOCATIONS
+      </Navbar.Brand>
+      <Nav className="justify-content-center w-100">
+        <Nav.Link href="/">LOCATIONS</Nav.Link>
+        <Nav.Link href="/about">ABOUT ME</Nav.Link>
+      </Nav>
+    </Navbar>
+  );
+}
+>>>>>>> f751098d8ea973b665c990fd86aa4e84d8604964
 
 export default NavbarComponent;
