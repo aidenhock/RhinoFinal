@@ -1,21 +1,19 @@
 import React from 'react';
-import { Navbar, Container, Nav } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Container, Navbar, Nav } from 'react-bootstrap';
+import './NavbarComponent.css'; // Make sure to include this
 
-const NavbarComponent = () => (
-  <Navbar bg="dark" variant="dark" expand="lg">
-    <Container>
-      <Navbar.Brand as={Link} to="/">RHINO LOCATIONS</Navbar.Brand>
-      <Navbar.Toggle aria-controls="basic-navbar-nav" />
-      <Navbar.Collapse id="basic-navbar-nav">
-        <Nav className="me-auto">
-          <Nav.Link as={Link} to="/">Home</Nav.Link>
-          <Nav.Link as={Link} to="/about">About Me</Nav.Link>
-          {/* You can add more Nav.Link here as needed */}
-        </Nav>
-      </Navbar.Collapse>
-    </Container>
-  </Navbar>
-);
+const NavbarComponent = () => {
+  return (
+    <Navbar bg="dark" variant="dark" className="flex-column text-center">
+      <Navbar.Brand  className="justify-content-center mb-0 w-100">
+         RHINO LOCATIONS
+      </Navbar.Brand>
+      <Nav className="justify-content-center w-100">
+        <Nav.Link href="/">LOCATIONS</Nav.Link>
+        <Nav.Link href="/about-me">ABOUT ME</Nav.Link>
+      </Nav>
+    </Navbar>
+  );
+}
 
 export default NavbarComponent;

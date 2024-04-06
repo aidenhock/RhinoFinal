@@ -11,15 +11,17 @@ import { initializeApp } from "firebase/app";
 //   measurementId: "G-1C78KFH4GP"
 // };
 import React from 'react';
-import SearchBarComponent from './components/SearchBarComponent';
 import LocationsList from './components/LocationsList';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import './components/SearchBarComponent.css'; // Correct path to your custom CSS
 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import NavbarComponent from './components/NavbarComponent';
 import HomePage from './pages/HomePage';
 import LocationPage from './pages/LocationPage';
 import AboutPage from './pages/AboutPage';
+
+
 
 const App = () => {
   // Function for handling search will go here
