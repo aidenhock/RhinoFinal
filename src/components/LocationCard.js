@@ -8,7 +8,7 @@ const LocationCard = ({ location }) => {
   return (
     <Col md={4} className="mb-2">
       <Link to={`/locations/${location.id}`} className="card-link">
-        <Card>
+        <Card> 
           <Card.Img variant="top" src={location.image} alt={`Image of ${location.title}`} />
           <Card.Body>
             <Card.Title className="card-title">{location.title}</Card.Title>
