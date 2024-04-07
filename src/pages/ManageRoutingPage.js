@@ -1,9 +1,7 @@
-// src/pages/EditListingPage.js
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+// src/pages/ManageRoutingPage.js
+import React from 'react';
 import ManageOptionCard from '../components/ManageOptionCard';
-import ManageListingsPage from './ManageListingsPage';
-
+import './ManageRoutingPage.css';
 
 const ManageRoutingPage = () => {
     return (
@@ -12,7 +10,7 @@ const ManageRoutingPage = () => {
           <div className="options-container">
             <ManageOptionCard
               title="Manage About Me"
-              description="Update your personal information or change your bio."
+              description="Update your locations information or images."
               navigateTo= '/ManageAbout'
             />
             <ManageOptionCard
@@ -23,6 +21,6 @@ const ManageRoutingPage = () => {
           </div>
         </div>
       );
-    };
+};
 
 export default ManageRoutingPage;

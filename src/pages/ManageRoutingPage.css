@@ -1,0 +1,13 @@
+/* ManageRoutingPageCss.css */
+.options-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 40px; /* Adjust this value to increase the spacing between cards */
+    padding: 20px; /* Adjust or keep the padding around the container */
+  }
+  
+  .manage-option-card {
+    margin: 20px; /* Increase the space around each card */
+    /* Other styling can be added here, e.g., width, cursor, etc. */
+  }
