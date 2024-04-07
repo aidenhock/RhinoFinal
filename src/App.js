@@ -9,7 +9,9 @@ import NavbarComponent from './components/NavbarComponent';
 import HomePage from './pages/HomePage';
 import LocationPage from './pages/LocationPage';
 import AboutPage from './pages/AboutPage';
+import ManageRoutingPage from'./pages/ManageRoutingPage';
 import ManageListingsPage from './pages/ManageListingsPage';
+import ManageAboutPage from './pages/ManageAboutPage';
 import EditListingPage from './pages/EditListingPage';
 import SecurityPage from './security/SecurityPage';
 import { isSessionValid } from './security/SessionManager';
@@ -36,7 +38,9 @@ const App = () => {
         <Route path="/" element={<HomePage />} />
         <Route path="/locations/:id" element={<LocationPage />} />
         <Route path="/about" element={<AboutPage />} />
-        <Route path="/manage" element={<ManageListingsPage />} />
+        <Route path="/manage" element={<ManageRoutingPage/>} />
+        <Route path="/ManageAbout" element={<ManageAboutPage />} />
+        <Route path="/ManageListings" element={<ManageListingsPage />} />
         <Route path="/manage/edit/:id" element={<EditListingPage />} />
       </Routes>
     </Router>
