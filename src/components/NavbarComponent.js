@@ -11,7 +11,6 @@ const NavbarComponent = () => {
       <Nav className="justify-content-center w-100">
         <Nav.Link href="/">LOCATIONS</Nav.Link>
         <Nav.Link href="/about">ABOUT ME</Nav.Link>
-        <Nav.Link href="/OLDmanage">OLDManage</Nav.Link>
         <Nav.Link href="/manage">Manage</Nav.Link>
       </Nav>
     </Navbar>
