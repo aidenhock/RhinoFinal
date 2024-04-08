@@ -1,8 +1,7 @@
-// Implement modulirization by completing template for each card routing necessary for updating 
-
 import React from 'react';
 import { Card } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import './ManageOptionCard.css';
 
 const ManageOptionCard = ({ title, description, navigateTo }) => {
   const navigate = useNavigate();
@@ -12,7 +11,7 @@ const ManageOptionCard = ({ title, description, navigateTo }) => {
   };
 
   return (
-    <Card className="text-center" style={{ cursor: 'pointer' }} onClick={handleClick}>
+  <Card className="text-center manage-option-card" onClick={handleClick}>
       <Card.Body>
         <Card.Title>{title}</Card.Title>
         <Card.Text>{description}</Card.Text>

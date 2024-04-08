@@ -1,0 +1,17 @@
+.manage-option-card:hover .card-body{
+    background-color: #f2f2f2; /* Light background color on hover for the card */
+    transform: scale(1.05); /* Slight scale up for effect */
+    transition: all 0.3s ease-in-out; /* Smooth transition for effects */
+    border-radius: none !important;
+    border-color: #f2f2f2 !important;
+    cursor: pointer;
+  }
+  
+
+  /* meow */
+
+.manage-option-card:hover .card-body,
+.manage-option-card:hover .card-title,
+.manage-option-card:hover .card-text {
+  color: black !important; /* Text color change for all text within the card on hover */
+}
