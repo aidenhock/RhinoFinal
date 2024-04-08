@@ -1,12 +1,17 @@
 /* LocationCard.css */
 .card {
-    transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for hover effect */
+    transition: background-color 0.3s ease, border 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for hover effect */
+    border: none !important;
+
     /* Other styling rules for your card */
 }
 
 .card:hover {
     background-color: #f2f2f2; /* Lighter background color on hover */
-    box-shadow: 0 .5rem 1.25rem rgba(173, 166, 120, 0.8); /* Shadow for a 'lifted card' effect */
+    border: none !important;
+
+    transition: background-color 0.3s ease, border 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for hover effect */
+    box-shadow: 0 .5rem 1.25rem rgba(0, 0, 0, 0.8); /* Shadow for a 'lifted card' effect */
 }
 
 .card-link {
@@ -50,12 +55,20 @@
   /* initial button styles */
   background-color: #635D5D; /* example background color */
   color: white; /* text color */
+  border: none !important;
   /* other styles */
 }
 
-.card-button:hover {
-  /* styles to apply on hover */
-  background-color: #D9D9D9; /* example hover background color */
-  color: #000; /* text color on hover */
-  /* other styles for hover effect */
+
+.card-body:hover,
+.card-title:hover,
+.card-text:hover,
+.card-footer:hover {
+    font-family: 'Lovelo', sans-serif;
+    color: black !important;
+    text-align: center !important; /* Center text for modal-title */
+    background-color: #D9D9D9!important;
+    border: none !important;
+
 }
+
