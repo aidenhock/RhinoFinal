@@ -1,32 +1,59 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../firebase'; // Ensure this path is correct
 import './LocationPage.css'; // Make sure to include the CSS file
 
 const LocationPage = () => {
-  let { id } = useParams(); // This hooks give us access to the URL parameters
+  let { id } = useParams(); // This hook gives us access to the URL parameters
+  const [locationData, setLocationData] = useState(null);
 
-  // Dummy data for the location
-  const locationData = {
-    id,
-    name: "LOCATION NAME",
-    description: `Here is a detailed description of location ${id}. More text goes here to elaborate on the location details.`,
-    images: [
-      "https://via.placeholder.com/600x400",
-      "https://via.placeholder.com/600x400",
-      "https://via.placeholder.com/600x400"
-    ]
-  };
+  useEffect(() => {
+    const fetchLocationData = async () => {
+      try {
+        const docRef = doc(db, 'listings', id);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          // Extract data and update state
+          setLocationData({
+            id: docSnap.id,
+            ...docSnap.data(),
+          });
+        } else {
+          console.log('No such document!');
+        }
+      } catch (error) {
+        console.error('Error getting document:', error);
+      }
+    };
+
+    fetchLocationData();
+  }, [id]); // Re-run the effect if the URL parameter `id` changes
+
+  // If data has not been fetched yet, you can show a loading spinner or a placeholder
+  if (!locationData) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="location-page">
       <div className="location-header">
-        <h1 className="location-title">{locationData.name}</h1>
+        <h1 className="location-title">{locationData.title}</h1>
       </div>
-      {locationData.images.map((image, index) => (
-        <img key={index} src={image} alt={`Location ${locationData.id}`} className="location-image" />
+      {locationData.pictures.map((image, index) => (
+        <img key={index} src={image} alt={`${locationData.title}`} className="location-image" />
       ))}
       <div className="location-content">
-        <div className="location-description">{locationData.description}</div>
+        <p className="location-description">{locationData.description}</p>
+        {/* Render tags as buttons */}
+        <div className="location-tags">
+          {locationData.tags.map((tag, index) => (
+            <button key={index} className="tag-button">
+              {tag}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );
