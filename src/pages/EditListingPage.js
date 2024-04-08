@@ -1,15 +1,20 @@
-// src/pages/EditListingPage.js
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { doc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { db, storage } from '../firebase';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
-import { Button, Form, Container, Row, Col, InputGroup } from 'react-bootstrap';
+import { Button, Form, Container, Row, Col } from 'react-bootstrap';
 
 const EditListingPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [listing, setListing] = useState(null);
+  const [listing, setListing] = useState({
+    title: '',
+    cityState: '',
+    tags: [],
+    description: '',
+    pictures: [],
+  });
   const [newImages, setNewImages] = useState([]);
   const [deleteImageIndices, setDeleteImageIndices] = useState(new Set());
 
@@ -18,7 +23,7 @@ const EditListingPage = () => {
       const docRef = doc(db, 'listings', id);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
-        setListing(docSnap.data());
+        setListing({ ...docSnap.data(), id: docSnap.id });
       } else {
         alert('Listing does not exist');
         navigate('/manage');
@@ -28,9 +33,9 @@ const EditListingPage = () => {
   }, [id, navigate]);
 
   const handleChange = ({ target: { name, value } }) => {
-    setListing(prevListing => ({
+    setListing((prevListing) => ({
       ...prevListing,
-      [name]: name === 'tags' ? value.split(',').map(tag => tag.trim()) : value
+      [name]: name === 'tags' ? value.split(',').map((tag) => tag.trim()) : value,
     }));
   };
 
@@ -41,49 +46,16 @@ const EditListingPage = () => {
   const handleDeleteImage = async (imageIndex) => {
     const imageUrl = listing.pictures[imageIndex];
     const confirmDelete = window.confirm("Are you sure you want to delete this image?");
-    
     if (confirmDelete) {
       try {
-        // Create a reference to the file to delete
         const imageRef = ref(storage, imageUrl);
-  
-        // Delete the file from Firebase Storage
         await deleteObject(imageRef);
-  
-        // Remove the image URL from the local state and Firestore
         const updatedPictures = listing.pictures.filter((_, idx) => idx !== imageIndex);
         await updateDoc(doc(db, 'listings', id), { pictures: updatedPictures });
-  
-        // Update local state
         setListing({ ...listing, pictures: updatedPictures });
-  
         alert('Image deleted successfully');
       } catch (error) {
         console.error('Error deleting image: ', error);
-      }
-    }
-  };
-  
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    if (window.confirm("Update listing? Please confirm your changes.")) { // Confirmation dialog for update
-      const newImageUrls = newImages.length ? await handleUploadImages() : [];
-      const allImageUrls = [
-        ...listing.pictures.filter((_, index) => !deleteImageIndices.has(index)),
-        ...newImageUrls
-      ];
-
-      try {
-        await updateDoc(doc(db, 'listings', id), {
-          ...listing,
-          pictures: allImageUrls
-        });
-
-        alert('Listing updated successfully');
-        navigate('/manage');
-      } catch (error) {
-        console.error('Error updating listing: ', error);
       }
     }
   };
@@ -96,32 +68,47 @@ const EditListingPage = () => {
     }));
   };
 
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const confirmUpdate = window.confirm("Are you sure you want to update this listing?");
+    if (confirmUpdate) {
+      try {
+        const newImageUrls = await handleUploadImages();
+        const allImageUrls = [
+          ...listing.pictures,
+          ...newImageUrls
+        ];
+        const updatedListing = {
+          ...listing,
+          tags: listing.tags.split(',').map(tag => tag.trim()), // Ensure tags are an array
+          pictures: allImageUrls
+        };
+        await updateDoc(doc(db, 'listings', id), updatedListing);
+        alert('Listing updated successfully');
+        navigate('/manage');
+      } catch (error) {
+        console.error('Error updating listing: ', error);
+      }
+    }
+  };
 
   const handleDelete = async () => {
-    const confirmDelete = window.confirm("Delete listing? This will also delete all associated images.");
-    
+    const confirmDelete = window.confirm("Are you sure you want to delete this listing?");
     if (confirmDelete) {
       try {
-        // Delete all images from Firebase Storage
         const deletionPromises = listing.pictures.map((imageUrl) => {
           const imageRef = ref(storage, imageUrl);
           return deleteObject(imageRef);
         });
-  
         await Promise.all(deletionPromises);
-  
-        // Delete the listing from Firestore
         await deleteDoc(doc(db, 'listings', id));
-  
-        alert('Listing and all associated images have been deleted successfully');
+        alert('Listing deleted successfully');
         navigate('/manage');
       } catch (error) {
         console.error('Error deleting listing: ', error);
       }
     }
   };
-  
-
 
   if (!listing) {
     return <div>Loading...</div>;
@@ -161,21 +148,35 @@ const EditListingPage = () => {
           />
         </Form.Group>
         <Form.Group className="mb-3">
-          <Form.Label>Upload New Images</Form.Label>
-          <Form.Control type="file" multiple onChange={handleNewImageChange} />
+          <Form.Label>Description</Form.Label>
+          <Form.Control
+            as="textarea"
+            name="description"
+            value={listing.description}
+            onChange={handleChange}
+            required
+          />
         </Form.Group>
-        <Row className="mb-3">
-          {listing.pictures.map((url, index) => (
-            <Col xs={6} md={4} lg={3} key={index} className="mb-2">
-              {!deleteImageIndices.has(index) && (
-                <div className="image-thumbnail">
-                  <img src={url} alt={`Listing ${index}`} style={{ width: '100%', height: 'auto' }} />
-                  <Button variant="danger" onClick={() => handleDeleteImage(index)}>Delete</Button>
-                </div>
-              )}
+        <Form.Group className="mb-3">
+          <Form.Label>Upload New Images</Form.Label>
+          <Form.Control
+            type="file"
+            multiple
+            onChange={handleNewImageChange}
+          />
+        </Form.Group>
+        {listing.pictures.map((url, index) => (
+          <Row className="mb-3" key={url}>
+            <Col xs={12} md={6}>
+              <img src={url} alt={`Listing ${index}`} className="img-fluid" />
             </Col>
-          ))}
-        </Row>
+            <Col xs={12} md={6}>
+              <Button variant="danger" onClick={() => handleDeleteImage(index)}>
+                Delete Image
+              </Button>
+            </Col>
+          </Row>
+        ))}
         <Button variant="primary" type="submit">Update Listing</Button>
         <Button variant="danger" onClick={handleDelete} className="ms-2">Delete Listing</Button>
       </Form>
