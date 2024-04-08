@@ -1,5 +1,5 @@
 //const SESSION_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
-const SESSION_DURATION = 30 * 1000;
+const SESSION_DURATION = 33 * 60 * 1000;
 
 export const isSessionValid = () => {
   const sessionExpiry = localStorage.getItem('sessionExpiry');
