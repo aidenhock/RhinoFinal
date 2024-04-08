@@ -3,7 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { doc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { db, storage } from '../firebase';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
-import { Button, Form, Container, Row, Col } from 'react-bootstrap';
+import { Button, Form, Container, Row, Col, InputGroup } from 'react-bootstrap';
+import './EditListingPage.css';
 
 const EditListingPage = () => {
   const { id } = useParams();
@@ -115,74 +116,81 @@ const EditListingPage = () => {
 
   return (
     <Container>
-      <h2>Edit Listing</h2>
+      <Row className="mb-4">
+        <Col className="text-center">
+          <h2>Edit Listing</h2>
+        </Col>
+      </Row>      
       <Form onSubmit={handleSubmit}>
-        {/* Title */}
-        <Form.Group className="mb-3">
-          <Form.Label>Title</Form.Label>
-          <Form.Control
-            type="text"
-            name="title"
-            value={listing.title}
-            onChange={handleChange}
-            required
-          />
-        </Form.Group>
-        {/* City and State */}
-        <Form.Group className="mb-3">
-          <Form.Label>City and State</Form.Label>
-          <Form.Control
-            type="text"
-            name="cityState"
-            value={listing.cityState}
-            onChange={handleChange}
-            required
-          />
-        </Form.Group>
-        {/* Tags */}
-        <Form.Group className="mb-3">
-          <Form.Label>Tags (comma-separated)</Form.Label>
-          <Form.Control
-            type="text"
-            name="tags"
-            value={listing.tags}
-            onChange={handleChange}
-          />
-        </Form.Group>
-        {/* Description */}
-        <Form.Group className="mb-3">
-          <Form.Label>Description</Form.Label>
-          <Form.Control
-            as="textarea"
-            name="description"
-            value={listing.description}
-            onChange={handleChange}
-            required
-          />
-        </Form.Group>
-        {/* Upload New Images */}
-        <Form.Group className="mb-3">
-          <Form.Label>Upload New Images</Form.Label>
-          <Form.Control
-            type="file"
-            multiple
-            onChange={handleNewImageChange}
-          />
-        </Form.Group>
         
-        <Row className="mb-3">
-          {listing.pictures.map((url, index) => (
-            <Col xs={6} md={4} lg={3} key={index} className="mb-2">
-              <div className="image-thumbnail">
-                <img src={url} alt={`Listing ${index}`} className="img-fluid" />
-                <Button variant="danger" onClick={() => handleDeleteImage(index)}>Delete</Button>
-              </div>
-            </Col>
-          ))}
-        </Row>
-        <Button variant="primary" type="submit">Update Listing</Button>
-        <Button variant="danger" onClick={handleDelete} className="ms-2">Delete Listing</Button>
-      </Form>
+    <Form.Group className="form-group">
+      <Form.Label className="form-label">Title</Form.Label>
+      <Form.Control
+        type="text"
+        name="title"
+        value={listing.title}
+        onChange={handleChange}
+        className="form-control"
+        required
+      />
+  </Form.Group>
+
+  {/* City and State Field */}
+  <Form.Group className="form-group">
+      <Form.Label className="form-label">City & State</Form.Label>
+      <Form.Control
+        type="text"
+        name="cityState"
+        value={listing.cityState}
+        onChange={handleChange}
+        className="form-control"
+        required
+      />
+  </Form.Group>
+
+  <Form.Group className="form-group">
+      <Form.Label className="form-label">Tags (comma-seperated)</Form.Label>
+      <Form.Control
+        type="text"
+        name="tags"
+        value={listing.tags}
+        onChange={handleChange}
+        className="form-control"
+      />
+  </Form.Group>
+  <Form.Group className="form-group">
+      <Form.Label className="form-label">Description</Form.Label>
+      <Form.Control
+        type="textarea"
+        name="description"
+        value={listing.description}
+        onChange={handleChange}
+        className="form-control"
+      />
+  </Form.Group>
+
+
+
+
+  <Form.Group className="form-group">
+      <Form.Label className="form-label">Upload New Images</Form.Label>
+      <Form.Control
+        type="file"
+        multiple
+        onChange={handleNewImageChange}
+      />
+  </Form.Group>
+
+
+  {/* Buttons */}
+  <Row className="mt-4">
+  <Button variant="primary" type="submit" className="custom-button my-3">Update Listing</Button>
+  <Button variant="primary" onClick={handleDelete} className="custom-button my-3">Delete Listing</Button>   
+      
+  </Row>
+</Form>
+
+
     </Container>
   );
 };

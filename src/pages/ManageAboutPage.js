@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
-import { Form, Button, Container } from 'react-bootstrap';
+import { Button, Form, Container, Row, Col, InputGroup } from 'react-bootstrap';
 import { db, storage } from '../firebase'; // Ensure this path is correct
+import './ManageAboutPage.css';
 
 const ManageAboutMePage = () => {
   const [aboutMeData, setAboutMeData] = useState({
@@ -72,31 +73,36 @@ const ManageAboutMePage = () => {
 
   return (
     <Container>
+      <Row className="mb-4">
+        <Col className="text-center">
+          <h2>Edit About Me</h2>
+        </Col>
+      </Row>  
+
       <Form onSubmit={handleSubmit}>
-        <Form.Group>
-          <Form.Label>First Name</Form.Label>
-          <Form.Control type="text" name="firstName" value={aboutMeData.firstName} onChange={handleInputChange} />
-        </Form.Group>
-        <Form.Group>
-          <Form.Label>Last Name</Form.Label>
-          <Form.Control type="text" name="lastName" value={aboutMeData.lastName} onChange={handleInputChange} />
-        </Form.Group>
-        <Form.Group>
-          <Form.Label>Contact Link</Form.Label>
-          <Form.Control type="text" name="contactLink" value={aboutMeData.contactLink} onChange={handleInputChange} />
-        </Form.Group>
-        <Form.Group>
-          <Form.Label>About Description</Form.Label>
-          <Form.Control as="textarea" rows={3} name="aboutDescription" value={aboutMeData.aboutDescription} onChange={handleInputChange} />
-        </Form.Group>
-        <Form.Group>
-          <Form.Label>Contact Image</Form.Label>
-          <Form.Control type="file" onChange={handleImageChange} />
-          {aboutMeData.contactImage && (
-            <img src={aboutMeData.contactImage} alt="Contact" style={{ marginTop: '10px', width: '100px', height: '100px' }} />
-          )}
-        </Form.Group>
-        <Button variant="primary" type="submit">Save Changes</Button>
+      <Form.Group className="form-group">
+        <Form.Label className="form-label">First Name</Form.Label>
+       <Form.Control type="text" name="firstName" value={aboutMeData.firstName} onChange={handleInputChange} className="form-control" />
+      </Form.Group>
+      <Form.Group className="form-group">
+    <Form.Label className="form-label">Last Name</Form.Label>
+    <Form.Control type="text" name="lastName" value={aboutMeData.lastName} onChange={handleInputChange} className="form-control" />
+</Form.Group>
+
+<Form.Group className="form-group">
+        <Form.Label className="form-label">Contact Link</Form.Label>
+       <Form.Control type="text" name="contactLink" value={aboutMeData.contactLink} onChange={handleInputChange} className="form-control" />
+      </Form.Group>
+<Form.Group className="form-group">
+        <Form.Label className="form-label">About Description</Form.Label>
+        <Form.Control as="textarea" rows={3} name="aboutDescription" value={aboutMeData.aboutDescription} onChange={handleInputChange} />
+      </Form.Group>
+      <Form.Group className="form-group">
+        <Form.Label className="form-label">Contact Image</Form.Label>
+       <Form.Control type="file" onChange={handleImageChange} />
+      </Form.Group>
+  
+      <Button variant="primary" type="submit" className="custom-button my-3">Save Changes</Button>
       </Form>
     </Container>
   );

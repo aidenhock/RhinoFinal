@@ -74,13 +74,13 @@ const ManageListingsPage = () => {
 
   return (
     <Container>
-      <Button variant="primary" onClick={handleShowModal} className="my-3">
+      <Button variant="primary" onClick={handleShowModal} className="custom-button my-3">
         + Add Listing
       </Button>
 
       <Modal show={showModal} onHide={handleCloseModal}>
         <Modal.Header closeButton>
-          <Modal.Title>Add New Listing</Modal.Title>
+        <h2 className="about-title">Add New Listing</h2>
         </Modal.Header>
         <Modal.Body>
           <Form onSubmit={handleSubmit}>
@@ -141,7 +141,7 @@ const ManageListingsPage = () => {
               />
             </Form.Group>
 
-            <Button variant="primary" type="submit">
+            <Button variant="primary" type="submit" className="custom-button my-3">
               Save Listing
             </Button>
           </Form>
