@@ -6,6 +6,7 @@ import { db, storage } from '../firebase'; // Make sure the path is correct
 import { useNavigate } from 'react-router-dom';
 import './ManageListingPage.css';
 
+
 const ManageListingsPage = () => {
   const [showModal, setShowModal] = useState(false);
   const [listings, setListings] = useState([]);
@@ -18,6 +19,7 @@ const ManageListingsPage = () => {
   });
   const [imageFiles, setImageFiles] = useState([]);
   const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false); // State to manage submission status
 
   const fetchListings = async () => {
     const querySnapshot = await getDocs(collection(db, 'listings'));
@@ -52,6 +54,8 @@ const ManageListingsPage = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setIsSubmitting(true); // Set isSubmitting to true to prevent further submissions
+
     const imageUrls = await handleImageUpload();
     try {
       await addDoc(collection(db, 'listings'), {
@@ -66,6 +70,8 @@ const ManageListingsPage = () => {
     } catch (error) {
       console.error('Error adding listing: ', error);
     }
+    setIsSubmitting(false); // Set isSubmitting to false to allow form submission again
+
   };
 
   const handleListingClick = (id) => {
@@ -141,8 +147,13 @@ const ManageListingsPage = () => {
               />
             </Form.Group>
 
-            <Button variant="primary" type="submit" className="custom-button my-3">
-              Save Listing
+            <Button
+              variant="primary"
+              type="submit"
+              disabled={isSubmitting}
+              className="custom-button my-3"
+            >
+              {isSubmitting ? 'Saving...' : 'Save Listing'}
             </Button>
           </Form>
         </Modal.Body>
