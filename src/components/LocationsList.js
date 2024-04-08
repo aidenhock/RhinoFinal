@@ -19,7 +19,7 @@ const LocationsList = ({ locations }) => {
 // Prop types validation
 LocationsList.propTypes = {
   locations: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.number.isRequired,
+    id: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
     city: PropTypes.string.isRequired,
     image: PropTypes.string.isRequired
