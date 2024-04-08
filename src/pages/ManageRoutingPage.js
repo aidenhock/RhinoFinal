@@ -6,7 +6,6 @@ import './ManageRoutingPage.css';
 const ManageRoutingPage = () => {
     return (
         <div className="manage-routing-page">
-          <h1>Management Pages</h1>
           <div className="options-container">
             <ManageOptionCard
               title="Manage About Me"

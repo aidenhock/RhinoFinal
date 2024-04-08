@@ -38,4 +38,9 @@
 
 }
 
-  
+.card-img-top {
+  height: 200px !important; /* Fixed height for all images */
+  object-fit: cover !important; /* Cover the space of the container */
+  object-position: center !important; /* Center the image within the element */
+  width: 100% !important; /* Ensure image width is always 100% of the card */
+}

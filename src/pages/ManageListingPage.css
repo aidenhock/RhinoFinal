@@ -16,7 +16,7 @@
     cursor: pointer; /* The default cursor */
     display: inline-block; /* Inline-block for label */
     margin: 0; /* Reset margin for modal-title */
-    text-align: center; /* Center text for modal-title */
+    text-align: center !important; /* Center text for modal-title */
     width: 100%; /* Full width for modal-title */
 }
 
@@ -54,6 +54,9 @@
 .card-title,
 .card-text {
     font-family: 'Lovelo', sans-serif;
+    color: white !important;
+    text-align: center !important; /* Center text for modal-title */
+
 }
 
 .card-container {
