@@ -23,7 +23,10 @@ const EditListingPage = () => {
       const docRef = doc(db, 'listings', id);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
-        setListing({ ...docSnap.data(), id: docSnap.id });
+        setListing({
+          ...docSnap.data(),
+          tags: docSnap.data().tags.join(', '), // Convert array of tags to string
+        });
       } else {
         alert('Listing does not exist');
         navigate('/manage');
@@ -33,9 +36,9 @@ const EditListingPage = () => {
   }, [id, navigate]);
 
   const handleChange = ({ target: { name, value } }) => {
-    setListing((prevListing) => ({
+    setListing(prevListing => ({
       ...prevListing,
-      [name]: name === 'tags' ? value.split(',').map((tag) => tag.trim()) : value,
+      [name]: value
     }));
   };
 
@@ -46,14 +49,13 @@ const EditListingPage = () => {
   const handleDeleteImage = async (imageIndex) => {
     const imageUrl = listing.pictures[imageIndex];
     const confirmDelete = window.confirm("Are you sure you want to delete this image?");
+    
     if (confirmDelete) {
       try {
         const imageRef = ref(storage, imageUrl);
         await deleteObject(imageRef);
         const updatedPictures = listing.pictures.filter((_, idx) => idx !== imageIndex);
-        await updateDoc(doc(db, 'listings', id), { pictures: updatedPictures });
         setListing({ ...listing, pictures: updatedPictures });
-        alert('Image deleted successfully');
       } catch (error) {
         console.error('Error deleting image: ', error);
       }
@@ -61,29 +63,31 @@ const EditListingPage = () => {
   };
 
   const handleUploadImages = async () => {
-    return Promise.all(Array.from(newImages).map(async (file) => {
+    const uploadPromises = Array.from(newImages).map(file => {
       const imageRef = ref(storage, `listings/${Date.now()}_${file.name}`);
-      const snapshot = await uploadBytes(imageRef, file);
-      return getDownloadURL(snapshot.ref);
-    }));
+      return uploadBytes(imageRef, file).then(snapshot => getDownloadURL(snapshot.ref));
+    });
+    return Promise.all(uploadPromises);
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const confirmUpdate = window.confirm("Are you sure you want to update this listing?");
+    const confirmUpdate = window.confirm("Update listing? Please confirm your changes.");
     if (confirmUpdate) {
       try {
         const newImageUrls = await handleUploadImages();
-        const allImageUrls = [
-          ...listing.pictures,
-          ...newImageUrls
+        const updatedPictures = [
+          ...listing.pictures.filter((_, index) => !deleteImageIndices.has(index)),
+          ...newImageUrls,
         ];
-        const updatedListing = {
+
+        await updateDoc(doc(db, 'listings', id), {
           ...listing,
-          tags: listing.tags.split(',').map(tag => tag.trim()), // Ensure tags are an array
-          pictures: allImageUrls
-        };
-        await updateDoc(doc(db, 'listings', id), updatedListing);
+          tags: listing.tags.split(',').map(tag => tag.trim()), // Convert string back to array
+          pictures: updatedPictures,
+          description: listing.description, // Ensure description is included in update
+        });
+
         alert('Listing updated successfully');
         navigate('/manage');
       } catch (error) {
@@ -93,14 +97,9 @@ const EditListingPage = () => {
   };
 
   const handleDelete = async () => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this listing?");
+    const confirmDelete = window.confirm("Delete listing? This will also delete all associated images.");
     if (confirmDelete) {
       try {
-        const deletionPromises = listing.pictures.map((imageUrl) => {
-          const imageRef = ref(storage, imageUrl);
-          return deleteObject(imageRef);
-        });
-        await Promise.all(deletionPromises);
         await deleteDoc(doc(db, 'listings', id));
         alert('Listing deleted successfully');
         navigate('/manage');
@@ -118,6 +117,7 @@ const EditListingPage = () => {
     <Container>
       <h2>Edit Listing</h2>
       <Form onSubmit={handleSubmit}>
+        {/* Title */}
         <Form.Group className="mb-3">
           <Form.Label>Title</Form.Label>
           <Form.Control
@@ -128,6 +128,7 @@ const EditListingPage = () => {
             required
           />
         </Form.Group>
+        {/* City and State */}
         <Form.Group className="mb-3">
           <Form.Label>City and State</Form.Label>
           <Form.Control
@@ -138,15 +139,17 @@ const EditListingPage = () => {
             required
           />
         </Form.Group>
+        {/* Tags */}
         <Form.Group className="mb-3">
           <Form.Label>Tags (comma-separated)</Form.Label>
           <Form.Control
             type="text"
             name="tags"
-            value={listing.tags.join(',')}
+            value={listing.tags}
             onChange={handleChange}
           />
         </Form.Group>
+        {/* Description */}
         <Form.Group className="mb-3">
           <Form.Label>Description</Form.Label>
           <Form.Control
@@ -157,6 +160,7 @@ const EditListingPage = () => {
             required
           />
         </Form.Group>
+        {/* Upload New Images */}
         <Form.Group className="mb-3">
           <Form.Label>Upload New Images</Form.Label>
           <Form.Control
@@ -165,18 +169,17 @@ const EditListingPage = () => {
             onChange={handleNewImageChange}
           />
         </Form.Group>
-        {listing.pictures.map((url, index) => (
-          <Row className="mb-3" key={url}>
-            <Col xs={12} md={6}>
-              <img src={url} alt={`Listing ${index}`} className="img-fluid" />
+        
+        <Row className="mb-3">
+          {listing.pictures.map((url, index) => (
+            <Col xs={6} md={4} lg={3} key={index} className="mb-2">
+              <div className="image-thumbnail">
+                <img src={url} alt={`Listing ${index}`} className="img-fluid" />
+                <Button variant="danger" onClick={() => handleDeleteImage(index)}>Delete</Button>
+              </div>
             </Col>
-            <Col xs={12} md={6}>
-              <Button variant="danger" onClick={() => handleDeleteImage(index)}>
-                Delete Image
-              </Button>
-            </Col>
-          </Row>
-        ))}
+          ))}
+        </Row>
         <Button variant="primary" type="submit">Update Listing</Button>
         <Button variant="danger" onClick={handleDelete} className="ms-2">Delete Listing</Button>
       </Form>
