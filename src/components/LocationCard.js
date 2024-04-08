@@ -25,7 +25,7 @@ const LocationCard = ({ location }) => {
 
 LocationCard.propTypes = {
   location: PropTypes.shape({
-    id: PropTypes.number.isRequired,
+    id: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
     city: PropTypes.string.isRequired,
     image: PropTypes.string.isRequired

@@ -1,74 +1,197 @@
 import React, { useState, useEffect } from 'react';
 import SearchBarComponent from '../components/SearchBarComponent';
 import LocationsList from '../components/LocationsList';
+import StateFilter from '../components/StateFilter';
+import CityFilter from '../components/CityFilter';
+import TagFilter from '../components/TagFilter';
 import { collection, getDocs, updateDoc, doc } from 'firebase/firestore';
 import { db } from '../firebase'; // Ensure this path is correct
 
 const HomePage = () => {
-  const [locations, setLocations] = useState([]);
-  const [allLocations, setAllLocations] = useState([]); // Store all listings for search filtering
+  const [allLocations, setAllLocations] = useState([]);
+  const [displayedLocations, setDisplayedLocations] = useState([]);
+  const [selectedStates, setSelectedStates] = useState([]);
+  const [selectedCities, setSelectedCities] = useState([]);
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [availableStates, setAvailableStates] = useState([]);
+  const [availableCities, setAvailableCities] = useState([]);
+  const [availableTags, setAvailableTags] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     const fetchAndUpdateListings = async () => {
       const querySnapshot = await getDocs(collection(db, 'listings'));
       const updates = []; // Keep track of update promises
+      const states = new Set();
+      const cities = new Set();
+      const tagsSet = new Set();
 
-      const locationData = querySnapshot.docs.map(docSnapshot => {
+      const listings = querySnapshot.docs.map(docSnapshot => {
         const data = docSnapshot.data();
         const id = docSnapshot.id;
 
-        // Check if featureList isn't already there, then prepare to update
+        // Split cityState into city and state
+        const parts = data.cityState.split(',').map(part => part.trim());
+        const [city, state] = parts.length === 2 ? parts : [null, null];
+        if (state) states.add(state);
+        if (city) cities.add(city);
+
+        (data.tags || []).forEach(tag => tagsSet.add(tag));
+
         if (!data.featureList) {
           const featureList = [
-            data.cityState, // cityState as a single element
-            data.title, // title as a single element
-            ...(data.tags || []), // Spread the tags if they exist
+            data.cityState,
+            data.title,
+            ...(data.tags || []),
           ];
           updates.push(updateDoc(doc(db, 'listings', id), { featureList }));
-
-          // Update the data object for immediate use
           data.featureList = featureList;
         }
-        
-        // Return the data for rendering, ensure cityState is correctly mapped
+
         return {
           id,
           ...data,
           image: data.pictures[0] || "https://via.placeholder.com/150",
-          city: data.cityState, // Make sure this line correctly maps to your component's expectations
+          city: city,
+          state: state,
         };
       });
 
-      // Wait for all Firestore updates to complete (if any)
       await Promise.all(updates);
 
-      // Set both the filtered locations and all locations
-      setLocations(locationData);
-      setAllLocations(locationData);
+      setAllLocations(listings);
+      setDisplayedLocations(listings);
+      setAvailableStates([...states]);
+      setAvailableCities([...cities]);
+      setAvailableTags([...tagsSet]);
     };
 
     fetchAndUpdateListings();
   }, []);
 
+  useEffect(() => {
+    // Start with all locations and apply search term, state, and city filters sequentially
+    let locationsFilteredByStateCity = allLocations;
+  
+    // Filter by search term if one exists
+    if (searchTerm) {
+      locationsFilteredByStateCity = locationsFilteredByStateCity.filter(location =>
+        location.featureList && location.featureList.some(feature =>
+          feature.toLowerCase().includes(searchTerm)
+        )
+      );
+    }
+  
+    // Filter by selected states
+    if (selectedStates.length > 0) {
+      locationsFilteredByStateCity = locationsFilteredByStateCity.filter(({ state }) =>
+        selectedStates.includes(state)
+      );
+    }
+  
+    // Filter by selected cities
+    if (selectedCities.length > 0) {
+      locationsFilteredByStateCity = locationsFilteredByStateCity.filter(({ city }) =>
+        selectedCities.includes(city)
+      );
+    }
+  
+    // Calculate available tags based on the state and city filtered locations
+    let tagsBasedOnStateCity = new Set();
+    locationsFilteredByStateCity.forEach(({ tags }) => {
+      (tags || []).forEach(tag => tagsBasedOnStateCity.add(tag));
+    });
+  
+    // Calculate available cities based on the state and city filtered locations
+    let citiesBasedOnState = new Set();
+    locationsFilteredByStateCity.forEach(({ cityState }) => {
+      if (cityState) {
+        const [city, state] = cityState.split(',').map(part => part.trim());
+        if (selectedStates.length === 0 || selectedStates.includes(state)) {
+          citiesBasedOnState.add(city);
+        }
+      }
+    });
+  
+    // Now apply the tag filter to filteredLocations if tags are selected
+    let filteredLocations = locationsFilteredByStateCity;
+    if (selectedTags.length > 0) {
+      filteredLocations = filteredLocations.filter(({ tags }) =>
+        tags.some(tag => selectedTags.includes(tag))
+      );
+    }
+  
+    // Update states for cities and tags available for filtering, and for displaying locations
+    setAvailableCities([...citiesBasedOnState]);
+    setAvailableTags([...tagsBasedOnStateCity]);
+    setDisplayedLocations(filteredLocations);
+  }, [searchTerm, selectedStates, selectedCities, selectedTags, allLocations]);
+  
+
+  const handleStateChange = (selectedStates) => {
+    setSelectedStates(selectedStates);
+    setSelectedCities([]);
+    setSelectedTags([]);
+  };
+
+  const handleCityChange = (selectedCities) => {
+    setSelectedCities(selectedCities);
+    setSelectedTags([]);
+  };
+
+  const handleTagChange = (selectedTags) => {
+    setSelectedTags(selectedTags);
+  };
+
   const handleSearch = (searchTerm) => {
+    setSearchTerm(searchTerm.trim().toLowerCase());
     if (!searchTerm.trim()) {
-      // Reset to show all locations if search is cleared
-      setLocations(allLocations);
+      setDisplayedLocations(allLocations);
     } else {
-      // Filter locations based on the search term
-      const filteredLocations = allLocations.filter(location =>
+      const searchFilteredLocations = allLocations.filter(location =>
         location.featureList && location.featureList.some(feature =>
           feature.toLowerCase().includes(searchTerm.toLowerCase())
         )
       );
-      setLocations(filteredLocations); // Update locations with filtered results
+      setDisplayedLocations(searchFilteredLocations);
     }
+    setSelectedStates([]);
+    setSelectedCities([]);
+    setSelectedTags([]);
   };
 
+  const clearFilters = () => {
+    setSelectedStates([]);
+    setSelectedCities([]);
+    setSelectedTags([]);
+    // Optionally reset the search term if you have a search bar
+    setSearchTerm('');
+  };
+  
   return (
     <>
       <SearchBarComponent onSearch={handleSearch} />
-      <LocationsList locations={locations} />
+      <button onClick={clearFilters}>Clear Filters</button>
+      <StateFilter 
+        availableStates={availableStates} 
+        selectedStates={selectedStates} 
+        onStateChange={handleStateChange}
+      />
+      {selectedStates.length > 0 && (
+        <CityFilter 
+          availableCities={availableCities} 
+          selectedCities={selectedCities} 
+          onCityChange={handleCityChange}
+        />
+      )}
+      {displayedLocations.length > 0 && (
+        <TagFilter 
+          availableTags={availableTags} 
+          selectedTags={selectedTags} 
+          onTagChange={handleTagChange}
+        />
+      )}
+      <LocationsList locations={displayedLocations} />
     </>
   );
 };
