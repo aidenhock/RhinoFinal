@@ -39,28 +39,52 @@ const EditListingPage = () => {
   };
 
   const handleDeleteImage = async (imageIndex) => {
-    setDeleteImageIndices(prevIndices => new Set(prevIndices).add(imageIndex));
+    const imageUrl = listing.pictures[imageIndex];
+    const confirmDelete = window.confirm("Are you sure you want to delete this image?");
+    
+    if (confirmDelete) {
+      try {
+        // Create a reference to the file to delete
+        const imageRef = ref(storage, imageUrl);
+  
+        // Delete the file from Firebase Storage
+        await deleteObject(imageRef);
+  
+        // Remove the image URL from the local state and Firestore
+        const updatedPictures = listing.pictures.filter((_, idx) => idx !== imageIndex);
+        await updateDoc(doc(db, 'listings', id), { pictures: updatedPictures });
+  
+        // Update local state
+        setListing({ ...listing, pictures: updatedPictures });
+  
+        alert('Image deleted successfully');
+      } catch (error) {
+        console.error('Error deleting image: ', error);
+      }
+    }
   };
+  
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if (window.confirm("Update listing? Please confirm your changes.")) { // Confirmation dialog for update
+      const newImageUrls = newImages.length ? await handleUploadImages() : [];
+      const allImageUrls = [
+        ...listing.pictures.filter((_, index) => !deleteImageIndices.has(index)),
+        ...newImageUrls
+      ];
 
-    const newImageUrls = newImages.length ? await handleUploadImages() : [];
-    const allImageUrls = [
-      ...listing.pictures.filter((_, index) => !deleteImageIndices.has(index)),
-      ...newImageUrls
-    ];
+      try {
+        await updateDoc(doc(db, 'listings', id), {
+          ...listing,
+          pictures: allImageUrls
+        });
 
-    try {
-      await updateDoc(doc(db, 'listings', id), {
-        ...listing,
-        pictures: allImageUrls
-      });
-
-      alert('Listing updated successfully');
-      navigate('/manage');
-    } catch (error) {
-      console.error('Error updating listing: ', error);
+        alert('Listing updated successfully');
+        navigate('/manage');
+      } catch (error) {
+        console.error('Error updating listing: ', error);
+      }
     }
   };
 
@@ -72,15 +96,32 @@ const EditListingPage = () => {
     }));
   };
 
+
   const handleDelete = async () => {
-    try {
-      await deleteDoc(doc(db, 'listings', id));
-      alert('Listing deleted successfully');
-      navigate('/manage');
-    } catch (error) {
-      console.error('Error deleting listing: ', error);
+    const confirmDelete = window.confirm("Delete listing? This will also delete all associated images.");
+    
+    if (confirmDelete) {
+      try {
+        // Delete all images from Firebase Storage
+        const deletionPromises = listing.pictures.map((imageUrl) => {
+          const imageRef = ref(storage, imageUrl);
+          return deleteObject(imageRef);
+        });
+  
+        await Promise.all(deletionPromises);
+  
+        // Delete the listing from Firestore
+        await deleteDoc(doc(db, 'listings', id));
+  
+        alert('Listing and all associated images have been deleted successfully');
+        navigate('/manage');
+      } catch (error) {
+        console.error('Error deleting listing: ', error);
+      }
     }
   };
+  
+
 
   if (!listing) {
     return <div>Loading...</div>;

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { Form, Button, Container } from 'react-bootstrap';
 import { db, storage } from '../firebase'; // Ensure this path is correct
 
@@ -42,7 +42,16 @@ const ManageAboutMePage = () => {
 
   const handleImageUpload = async () => {
     if (!imageFile) return null; // No file selected, return null
-    const fileRef = ref(storage, `aboutmeImages/${Date.now()}_${imageFile.name}`);
+
+    // If there's an existing image, delete it first
+    if (aboutMeData.contactImage) {
+      const existingImageRef = ref(storage, aboutMeData.contactImage);
+      await deleteObject(existingImageRef).catch(error => {
+        console.error('Error deleting existing image:', error);
+      });
+    }
+
+    const fileRef = ref(storage, `aboutmeImages/${imageFile.name}`);
     const snapshot = await uploadBytes(fileRef, imageFile);
     const imageUrl = await getDownloadURL(snapshot.ref);
     return imageUrl;
