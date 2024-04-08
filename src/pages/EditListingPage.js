@@ -1,4 +1,3 @@
-// src/pages/EditListingPage.js
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { doc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
@@ -10,7 +9,13 @@ import './EditListingPage.css';
 const EditListingPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [listing, setListing] = useState(null);
+  const [listing, setListing] = useState({
+    title: '',
+    cityState: '',
+    tags: [],
+    description: '',
+    pictures: [],
+  });
   const [newImages, setNewImages] = useState([]);
   const [deleteImageIndices, setDeleteImageIndices] = useState(new Set());
 
@@ -19,7 +24,10 @@ const EditListingPage = () => {
       const docRef = doc(db, 'listings', id);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
-        setListing(docSnap.data());
+        setListing({
+          ...docSnap.data(),
+          tags: docSnap.data().tags.join(', '), // Convert array of tags to string
+        });
       } else {
         alert('Listing does not exist');
         navigate('/manage');
@@ -31,7 +39,7 @@ const EditListingPage = () => {
   const handleChange = ({ target: { name, value } }) => {
     setListing(prevListing => ({
       ...prevListing,
-      [name]: name === 'tags' ? value.split(',').map(tag => tag.trim()) : value
+      [name]: value
     }));
   };
 
@@ -45,40 +53,40 @@ const EditListingPage = () => {
     
     if (confirmDelete) {
       try {
-        // Create a reference to the file to delete
         const imageRef = ref(storage, imageUrl);
-  
-        // Delete the file from Firebase Storage
         await deleteObject(imageRef);
-  
-        // Remove the image URL from the local state and Firestore
         const updatedPictures = listing.pictures.filter((_, idx) => idx !== imageIndex);
-        await updateDoc(doc(db, 'listings', id), { pictures: updatedPictures });
-  
-        // Update local state
         setListing({ ...listing, pictures: updatedPictures });
-  
-        alert('Image deleted successfully');
       } catch (error) {
         console.error('Error deleting image: ', error);
       }
     }
   };
-  
+
+  const handleUploadImages = async () => {
+    const uploadPromises = Array.from(newImages).map(file => {
+      const imageRef = ref(storage, `listings/${Date.now()}_${file.name}`);
+      return uploadBytes(imageRef, file).then(snapshot => getDownloadURL(snapshot.ref));
+    });
+    return Promise.all(uploadPromises);
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (window.confirm("Update listing? Please confirm your changes.")) { // Confirmation dialog for update
-      const newImageUrls = newImages.length ? await handleUploadImages() : [];
-      const allImageUrls = [
-        ...listing.pictures.filter((_, index) => !deleteImageIndices.has(index)),
-        ...newImageUrls
-      ];
-
+    const confirmUpdate = window.confirm("Update listing? Please confirm your changes.");
+    if (confirmUpdate) {
       try {
+        const newImageUrls = await handleUploadImages();
+        const updatedPictures = [
+          ...listing.pictures.filter((_, index) => !deleteImageIndices.has(index)),
+          ...newImageUrls,
+        ];
+
         await updateDoc(doc(db, 'listings', id), {
           ...listing,
-          pictures: allImageUrls
+          tags: listing.tags.split(',').map(tag => tag.trim()), // Convert string back to array
+          pictures: updatedPictures,
+          description: listing.description, // Ensure description is included in update
         });
 
         alert('Listing updated successfully');
@@ -89,40 +97,18 @@ const EditListingPage = () => {
     }
   };
 
-  const handleUploadImages = async () => {
-    return Promise.all(Array.from(newImages).map(async (file) => {
-      const imageRef = ref(storage, `listings/${Date.now()}_${file.name}`);
-      const snapshot = await uploadBytes(imageRef, file);
-      return getDownloadURL(snapshot.ref);
-    }));
-  };
-
-
   const handleDelete = async () => {
     const confirmDelete = window.confirm("Delete listing? This will also delete all associated images.");
-    
     if (confirmDelete) {
       try {
-        // Delete all images from Firebase Storage
-        const deletionPromises = listing.pictures.map((imageUrl) => {
-          const imageRef = ref(storage, imageUrl);
-          return deleteObject(imageRef);
-        });
-  
-        await Promise.all(deletionPromises);
-  
-        // Delete the listing from Firestore
         await deleteDoc(doc(db, 'listings', id));
-  
-        alert('Listing and all associated images have been deleted successfully');
+        alert('Listing deleted successfully');
         navigate('/manage');
       } catch (error) {
         console.error('Error deleting listing: ', error);
       }
     }
   };
-  
-
 
   if (!listing) {
     return <div>Loading...</div>;
@@ -172,6 +158,18 @@ const EditListingPage = () => {
         className="form-control"
       />
   </Form.Group>
+  <Form.Group className="form-group">
+      <Form.Label className="form-label">Description</Form.Label>
+      <Form.Control
+        type="textarea"
+        name="description"
+        value={listing.description}
+        onChange={handleChange}
+        className="form-control"
+      />
+  </Form.Group>
+
+
 
 
   <Form.Group className="form-group">
