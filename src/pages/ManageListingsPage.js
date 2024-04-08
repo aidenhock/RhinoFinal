@@ -9,6 +9,8 @@ import './ManageListingPage.css';
 const ManageListingsPage = () => {
   const [showModal, setShowModal] = useState(false);
   const [listings, setListings] = useState([]);
+  const [isSaving, setIsSaving] = useState(false);
+
   const [newListing, setNewListing] = useState({
     title: '',
     cityState: '',
@@ -52,8 +54,10 @@ const ManageListingsPage = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const imageUrls = await handleImageUpload();
+    setIsSaving(true); // Disable the button as we start the upload process
+
     try {
+      const imageUrls = await handleImageUpload();
       await addDoc(collection(db, 'listings'), {
         ...newListing,
         tags: newListing.tags.split(',').map(tag => tag.trim()),
@@ -66,6 +70,8 @@ const ManageListingsPage = () => {
     } catch (error) {
       console.error('Error adding listing: ', error);
     }
+
+    setIsSaving(false); // Enable the button after the process is complete
   };
 
   const handleListingClick = (id) => {
@@ -141,8 +147,8 @@ const ManageListingsPage = () => {
               />
             </Form.Group>
 
-            <Button variant="primary" type="submit" className="custom-button my-3">
-              Save Listing
+            <Button variant="primary" type="submit" className="custom-button my-3" disabled={isSaving}>
+                 Save Listing
             </Button>
           </Form>
         </Modal.Body>
