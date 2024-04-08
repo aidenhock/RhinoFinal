@@ -6,7 +6,6 @@ import { db, storage } from '../firebase'; // Make sure the path is correct
 import { useNavigate } from 'react-router-dom';
 import './ManageListingPage.css';
 
-
 const ManageListingsPage = () => {
   const [showModal, setShowModal] = useState(false);
   const [listings, setListings] = useState([]);
@@ -16,6 +15,7 @@ const ManageListingsPage = () => {
     title: '',
     cityState: '',
     tags: '',
+    description: '', // Added a description field
     pictures: [],
   });
   const [imageFiles, setImageFiles] = useState([]);
@@ -50,7 +50,6 @@ const ManageListingsPage = () => {
       return uploadBytes(fileRef, file).then(snapshot => getDownloadURL(snapshot.ref));
     });
     return Promise.all(uploadPromises);
-    
   };
 
   const handleSubmit = async (event) => {
@@ -63,9 +62,10 @@ const ManageListingsPage = () => {
         ...newListing,
         tags: newListing.tags.split(',').map(tag => tag.trim()),
         pictures: imageUrls,
+        description: newListing.description.trim(), // Save the description
       });
-      handleCloseModal(); // Optionally refetch listings when the modal closes
-      setNewListing({ title: '', cityState: '', tags: '', pictures: [] });
+      handleCloseModal();
+      setNewListing({ title: '', cityState: '', tags: '', description: '', pictures: [] }); // Reset the state
       setImageFiles([]);
     } catch (error) {
       console.error('Error adding listing: ', error);
@@ -86,78 +86,68 @@ const ManageListingsPage = () => {
 
       <Modal show={showModal} onHide={handleCloseModal}>
         <Modal.Header closeButton>
-          <Modal.Title>Add New Listing</Modal.Title>
+        <h2 className="about-title">Add New Listing</h2>
         </Modal.Header>
         <Modal.Body>
           <Form onSubmit={handleSubmit}>
-          <Form.Group as={Row} className="mb-3 align-items-center">
-            <Col xs="auto">
-              <Button type="button" className="custom-label-button">
-                Title
-              </Button>
-            </Col>
-            <Col>
+            {/* Form Group for Title */}
+            <Form.Group className="mb-3">
+              <Form.Label>Title</Form.Label>
               <Form.Control
                 type="text"
                 name="title"
                 required
                 value={newListing.title}
                 onChange={handleChange}
-                className="custom-form-input"
               />
-            </Col>
-          </Form.Group>
-{/* Repeat for other Form.Group components */}
-
-<Form.Group as={Row} className="mb-3 align-items-center">
-            <Col xs="auto">
-              <Button type="button" className="custom-label-button">
-                City & State
-              </Button>
-            </Col>
-            <Col>
+            </Form.Group>
+            
+            {/* Form Group for City & State */}
+            <Form.Group className="mb-3">
+              <Form.Label>City and State</Form.Label>
               <Form.Control
                 type="text"
                 name="cityState"
                 required
                 value={newListing.cityState}
                 onChange={handleChange}
-                className="custom-form-input"
               />
-            </Col>
-          </Form.Group>
-
-          <Form.Group as={Row} className="mb-3 align-items-center">
-            <Col xs="auto">
-              <Button type="button" className="custom-label-button">
-                Tags (comma-seperated)
-              </Button>
-            </Col>
-            <Col>
+            </Form.Group>
+            
+            {/* Form Group for Tags */}
+            <Form.Group className="mb-3">
+              <Form.Label>Tags (comma-separated)</Form.Label>
               <Form.Control
                 type="text"
                 name="tags"
-                required
                 value={newListing.tags}
                 onChange={handleChange}
-                className="custom-form-input"
               />
-            </Col>
-          </Form.Group>
+            </Form.Group>
+            
+            {/* Form Group for Description */}
             <Form.Group className="mb-3">
-              <Form.Label htmlFor="file-upload" className="custom-file-upload">
-                Choose Files
-              </Form.Label>
+              <Form.Label>Description</Form.Label>
+              <Form.Control
+                as="textarea"
+                name="description"
+                required
+                value={newListing.description}
+                onChange={handleChange}
+              />
+            </Form.Group>
+            
+            {/* Form Group for Image Upload */}
+            <Form.Group className="mb-3">
+              <Form.Label>Upload Images</Form.Label>
               <Form.Control
                 type="file"
                 multiple
-                id="file-upload"
                 onChange={handleImageChange}
-                style={{ display: 'none' }}
               />
             </Form.Group>
 
-            <Button variant="primary" type="submit" className="custom-button" disabled={isSaving}>
+            <Button variant="primary" type="submit" className="custom-button my-3" disabled={isSaving}>
                  Save Listing
             </Button>
           </Form>
@@ -172,7 +162,9 @@ const ManageListingsPage = () => {
               <Card.Body>
                 <Card.Title>{listing.title}</Card.Title>
                 <Card.Text>{listing.cityState}</Card.Text>
+                {/* Display tags and description */}
                 <Card.Text>{listing.tags.join(', ')}</Card.Text>
+                <Card.Text>{listing.description}</Card.Text>
               </Card.Body>
             </Card>
           </Col>
@@ -183,4 +175,3 @@ const ManageListingsPage = () => {
 };
 
 export default ManageListingsPage;
-    
