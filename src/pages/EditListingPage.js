@@ -76,26 +76,35 @@ const EditListingPage = () => {
     const confirmUpdate = window.confirm("Update listing? Please confirm your changes.");
     if (confirmUpdate) {
       try {
+        // Generate the new featureList
+        const updatedFeatureList = [
+          listing.cityState,
+          listing.title,
+          ...(listing.tags.split(',').map(tag => tag.trim())), // Ensure tags are updated and included
+        ];
+  
         const newImageUrls = await handleUploadImages();
         const updatedPictures = [
           ...listing.pictures.filter((_, index) => !deleteImageIndices.has(index)),
           ...newImageUrls,
         ];
-
+  
+        // Update the document with the new listing details including the updated featureList
         await updateDoc(doc(db, 'listings', id), {
           ...listing,
-          tags: listing.tags.split(',').map(tag => tag.trim()), // Convert string back to array
+          tags: listing.tags.split(',').map(tag => tag.trim()),
           pictures: updatedPictures,
-          description: listing.description, // Ensure description is included in update
+          featureList: updatedFeatureList, // Include the updated featureList in the Firestore document
         });
-
+  
         alert('Listing updated successfully');
         navigate('/manage');
       } catch (error) {
-        console.error('Error updating listing: ', error);
+        console.error('Error updating listing:', error);
       }
     }
   };
+  
 
   const handleDelete = async () => {
     const confirmDelete = window.confirm("Delete listing? This will also delete all associated images.");
