@@ -12,7 +12,7 @@ const CityFilter = ({ availableCities, selectedCities, onCityChange, isDisabled 
 
   return (
     <div>
-      <h5>Select City(s):</h5>
+        <h5 className="filterTitle">Select City(s):</h5>
       {availableCities.map((city) => (
         <Form.Check
           key={city}
@@ -21,6 +21,7 @@ const CityFilter = ({ availableCities, selectedCities, onCityChange, isDisabled 
           checked={selectedCities.includes(city)}
           onChange={(e) => handleCitySelectionChange(city, e.target.checked)}
           disabled={isDisabled}
+          className='formCheck'
         />
       ))}
     </div>

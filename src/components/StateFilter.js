@@ -12,7 +12,7 @@ const StateFilter = ({ availableStates, selectedStates, onStateChange }) => {
 
   return (
     <div>
-      <h5>Select State(s):</h5>
+        <h5 className="filterTitle">Select State(s):</h5>
       {availableStates.map((state) => (
         <Form.Check
           key={state}
@@ -20,6 +20,7 @@ const StateFilter = ({ availableStates, selectedStates, onStateChange }) => {
           label={state}
           checked={selectedStates.includes(state)}
           onChange={(e) => handleStateSelectionChange(state, e.target.checked)}
+          className='formCheck'
         />
       ))}
     </div>

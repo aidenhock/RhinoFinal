@@ -1,6 +1,7 @@
 // TagFilter.js
 import React from 'react';
 import { Form } from 'react-bootstrap';
+import './tagFilter.css';
 
 const TagFilter = ({ availableTags, selectedTags, onTagChange }) => {
   const handleTagSelectionChange = (tag, isChecked) => {
@@ -12,7 +13,7 @@ const TagFilter = ({ availableTags, selectedTags, onTagChange }) => {
 
   return (
     <div>
-      <h5>Select Tag(s):</h5>
+        <h5 className="filterTitle">Select Tag(s):</h5>
       {availableTags.map((tag) => (
         <Form.Check
           key={tag}
@@ -20,6 +21,7 @@ const TagFilter = ({ availableTags, selectedTags, onTagChange }) => {
           label={tag}
           checked={selectedTags.includes(tag)}
           onChange={(e) => handleTagSelectionChange(tag, e.target.checked)}
+          className='formCheck'
         />
       ))}
     </div>
