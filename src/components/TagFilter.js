@@ -13,7 +13,7 @@ const TagFilter = ({ availableTags, selectedTags, onTagChange }) => {
 
   return (
     <div>
-        <h5 className="filterTitle">Select Tag(s):</h5>
+        <h5 className='filterTitle'>Select Tag(s):</h5>
       {availableTags.map((tag) => (
         <Form.Check
           key={tag}

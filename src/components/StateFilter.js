@@ -1,6 +1,7 @@
 // StateFilter.js
 import React from 'react';
 import { Form } from 'react-bootstrap';
+import './tagFilter.css';
 
 const StateFilter = ({ availableStates, selectedStates, onStateChange }) => {
   const handleStateSelectionChange = (state, isChecked) => {

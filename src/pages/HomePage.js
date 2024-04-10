@@ -4,8 +4,10 @@ import LocationsList from '../components/LocationsList';
 import StateFilter from '../components/StateFilter';
 import CityFilter from '../components/CityFilter';
 import TagFilter from '../components/TagFilter';
+import DropdownCheckboxFilter from '../components/DropdownCheckboxFilter'
 import { collection, getDocs, updateDoc, doc } from 'firebase/firestore';
 import { db } from '../firebase'; // Ensure this path is correct
+import './filter.css';
 
 const HomePage = () => {
   const [allLocations, setAllLocations] = useState([]);
@@ -70,41 +72,27 @@ const HomePage = () => {
   }, []);
 
   useEffect(() => {
-    // Start with all locations and apply search term, state, and city filters sequentially
-    let locationsFilteredByStateCity = allLocations;
+    let locationsFilteredByState = allLocations;
   
     // Filter by search term if one exists
     if (searchTerm) {
-      locationsFilteredByStateCity = locationsFilteredByStateCity.filter(location =>
+      locationsFilteredByState = locationsFilteredByState.filter(location =>
         location.featureList && location.featureList.some(feature =>
           feature.toLowerCase().includes(searchTerm)
         )
       );
     }
   
-    // Filter by selected states
+    // Filter by selected states to determine available cities
     if (selectedStates.length > 0) {
-      locationsFilteredByStateCity = locationsFilteredByStateCity.filter(({ state }) =>
+      locationsFilteredByState = locationsFilteredByState.filter(({ state }) =>
         selectedStates.includes(state)
       );
     }
   
-    // Filter by selected cities
-    if (selectedCities.length > 0) {
-      locationsFilteredByStateCity = locationsFilteredByStateCity.filter(({ city }) =>
-        selectedCities.includes(city)
-      );
-    }
-  
-    // Calculate available tags based on the state and city filtered locations
-    let tagsBasedOnStateCity = new Set();
-    locationsFilteredByStateCity.forEach(({ tags }) => {
-      (tags || []).forEach(tag => tagsBasedOnStateCity.add(tag));
-    });
-  
-    // Calculate available cities based on the state and city filtered locations
+    // Calculate available cities from locationsFilteredByState
     let citiesBasedOnState = new Set();
-    locationsFilteredByStateCity.forEach(({ cityState }) => {
+    locationsFilteredByState.forEach(({ cityState }) => {
       if (cityState) {
         const [city, state] = cityState.split(',').map(part => part.trim());
         if (selectedStates.length === 0 || selectedStates.includes(state)) {
@@ -113,8 +101,22 @@ const HomePage = () => {
       }
     });
   
-    // Now apply the tag filter to filteredLocations if tags are selected
-    let filteredLocations = locationsFilteredByStateCity;
+    // Filter by selected cities if any are selected to determine displayed locations
+    let locationsFilteredByCity = locationsFilteredByState;
+    if (selectedCities.length > 0) {
+      locationsFilteredByCity = locationsFilteredByState.filter(({ city }) =>
+        selectedCities.includes(city)
+      );
+    }
+  
+    // Calculate available tags based on the state and city filtered locations
+    let tagsBasedOnStateCity = new Set();
+    locationsFilteredByCity.forEach(({ tags }) => {
+      (tags || []).forEach(tag => tagsBasedOnStateCity.add(tag));
+    });
+  
+    // Apply the tag filter to filteredLocations if tags are selected
+    let filteredLocations = locationsFilteredByCity;
     if (selectedTags.length > 0) {
       filteredLocations = filteredLocations.filter(({ tags }) =>
         tags.some(tag => selectedTags.includes(tag))
@@ -126,6 +128,7 @@ const HomePage = () => {
     setAvailableTags([...tagsBasedOnStateCity]);
     setDisplayedLocations(filteredLocations);
   }, [searchTerm, selectedStates, selectedCities, selectedTags, allLocations]);
+  
   
 
   const handleStateChange = (selectedStates) => {
@@ -171,29 +174,37 @@ const HomePage = () => {
   return (
     <>
       <SearchBarComponent onSearch={handleSearch} />
-      <button onClick={clearFilters}>Clear Filters</button>
-      <StateFilter 
-        availableStates={availableStates} 
-        selectedStates={selectedStates} 
-        onStateChange={handleStateChange}
-      />
-      {selectedStates.length > 0 && (
-        <CityFilter 
-          availableCities={availableCities} 
-          selectedCities={selectedCities} 
-          onCityChange={handleCityChange}
-        />
-      )}
-      {displayedLocations.length > 0 && (
-        <TagFilter 
-          availableTags={availableTags} 
-          selectedTags={selectedTags} 
-          onTagChange={handleTagChange}
-        />
-      )}
-      <LocationsList locations={displayedLocations} />
+
+      <div className="container">
+        <LocationsList locations={displayedLocations} />
+        <div className="filters">
+        <button className="filterTitle" onClick={clearFilters}>Clear Filters</button>
+        <h1></h1>
+          <DropdownCheckboxFilter class='filterTitle'
+            title="Select State(s)"
+            options={availableStates}
+            selectedOptions={selectedStates}
+            onFilterChange={handleStateChange}
+          />
+          <h1></h1>
+          <DropdownCheckboxFilter class='filterTitle'
+            title="Select City(s)"
+            options={availableCities}
+            selectedOptions={selectedCities}
+            onFilterChange={handleCityChange}
+          />
+          <h1></h1>
+          <DropdownCheckboxFilter class='filterTitle'
+            title="Select Tag(s)"
+            options={availableTags}
+            selectedOptions={selectedTags}
+            onFilterChange={handleTagChange}
+          />
+        </div>
+      </div>
     </>
   );
+  
 };
 
 export default HomePage;
