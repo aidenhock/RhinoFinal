@@ -7,6 +7,7 @@ import TagFilter from '../components/TagFilter';
 import DropdownCheckboxFilter from '../components/DropdownCheckboxFilter'
 import { collection, getDocs, updateDoc, doc } from 'firebase/firestore';
 import { db } from '../firebase'; // Ensure this path is correct
+import './filter.css';
 
 const HomePage = () => {
   const [allLocations, setAllLocations] = useState([]);
@@ -173,32 +174,37 @@ const HomePage = () => {
   return (
     <>
       <SearchBarComponent onSearch={handleSearch} />
-      <button onClick={clearFilters}>Clear Filters</button>
-      
-      <DropdownCheckboxFilter
-        title="Select State(s)"
-        options={availableStates}
-        selectedOptions={selectedStates}
-        onFilterChange={handleStateChange}
-      />
-      
-      <DropdownCheckboxFilter
-        title="Select City(s)"
-        options={availableCities}
-        selectedOptions={selectedCities}
-        onFilterChange={handleCityChange}
-      />
-      
-      <DropdownCheckboxFilter
-        title="Select Tag(s)"
-        options={availableTags}
-        selectedOptions={selectedTags}
-        onFilterChange={handleTagChange}
-      />
-      
-      <LocationsList locations={displayedLocations} />
+
+      <div className="container">
+        <LocationsList locations={displayedLocations} />
+        <div className="filters">
+        <button className="filterTitle" onClick={clearFilters}>Clear Filters</button>
+        <h1></h1>
+          <DropdownCheckboxFilter class='filterTitle'
+            title="Select State(s)"
+            options={availableStates}
+            selectedOptions={selectedStates}
+            onFilterChange={handleStateChange}
+          />
+          <h1></h1>
+          <DropdownCheckboxFilter class='filterTitle'
+            title="Select City(s)"
+            options={availableCities}
+            selectedOptions={selectedCities}
+            onFilterChange={handleCityChange}
+          />
+          <h1></h1>
+          <DropdownCheckboxFilter class='filterTitle'
+            title="Select Tag(s)"
+            options={availableTags}
+            selectedOptions={selectedTags}
+            onFilterChange={handleTagChange}
+          />
+        </div>
+      </div>
     </>
   );
+  
 };
 
 export default HomePage;

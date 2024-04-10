@@ -23,7 +23,7 @@
     text-align: center;
     font-family: 'Lovelo', sans-serif;
     color: white !important;
-    font-size: 3rem !important;/* Example size; adjust as needed */
+    font-size: 2rem !important;/* Example size; adjust as needed */
 
   }
   
@@ -39,7 +39,7 @@
     border-top: none !important; /* Removes border-top if you don't want it */
     padding: 1rem !important; /* Adjust padding as needed */
     border-radius: 0 0 0.25rem 0.25rem !important; /* Adjust border-radius as needed */
-    font-size: 1.5rem !important;/* Example size; adjust as needed */
+    font-size: 1rem !important;/* Example size; adjust as needed */
 
 }
 

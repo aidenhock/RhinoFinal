@@ -1,5 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Dropdown, Form, Button } from 'react-bootstrap';
+import './DropdownCheckboxFilter.css';
+import './tagFilter.css';
+
 
 const DropdownCheckboxFilter = ({ title, options, selectedOptions, onFilterChange }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -29,17 +32,18 @@ const DropdownCheckboxFilter = ({ title, options, selectedOptions, onFilterChang
 
   return (
     <div ref={dropdownRef}>
-      <Button onClick={toggleOpen}>{title}</Button>
+      <Button class='filterTitle' onClick={toggleOpen}>{title}</Button>
       <Dropdown.Menu show={isOpen} align="right">
         {options.map((option) => (
           <Dropdown.Item key={option} as="button">
-            <Form.Check
+            <Form.Check 
               type="checkbox"
               label={option}
               id={`dropdown-check-${option}`}
               checked={selectedOptions.includes(option)}
               onChange={() => handleCheckboxChange(option)}
               onClick={(e) => e.stopPropagation()} // Prevent dropdown from closing
+              className='formCheck'
             />
           </Dropdown.Item>
         ))}

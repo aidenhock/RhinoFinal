@@ -6,6 +6,7 @@ import { db, storage } from '../firebase'; // Make sure the path is correct
 import { useNavigate } from 'react-router-dom';
 import './ManageListingPage.css';
 
+
 const ManageListingsPage = () => {
   const [showModal, setShowModal] = useState(false);
   const [listings, setListings] = useState([]);
@@ -20,6 +21,7 @@ const ManageListingsPage = () => {
   });
   const [imageFiles, setImageFiles] = useState([]);
   const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false); // State to manage submission status
 
   const fetchListings = async () => {
     const querySnapshot = await getDocs(collection(db, 'listings'));
