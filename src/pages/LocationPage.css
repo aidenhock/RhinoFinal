@@ -58,3 +58,9 @@
     /* Add any other styles you wish to include for your labels */
   }
   
+
+
+  .image-gallery-image {
+    max-width: 100%; /* Adjust this value to fit your needs */
+    height: auto; /* This maintains the aspect ratio */
+}
