@@ -10,12 +10,14 @@ const ManageRoutingPage = () => {
           <div className="options-container">
             <ManageOptionCard
               title="Manage About Me"
-              description="Update your locations information or images."
+              description="Update your personal information or change your bio."
+
               navigateTo= '/ManageAbout'
             />
             <ManageOptionCard
               title="Manage Locations"
-              description="Update your personal information or change your bio."
+              description="Update your locations information or images."
+
               navigateTo= '/ManageListings'
             />
           </div>

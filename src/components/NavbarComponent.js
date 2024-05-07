@@ -1,10 +1,10 @@
 import React from 'react';
 import { Container, Navbar, Nav } from 'react-bootstrap';
-import './NavbarComponent.css'; // Make sure to include this
+import './NavbarComponent.css';
 
 const NavbarComponent = () => {
   return (
-    <Navbar bg="dark" variant="dark" className="flex-column text-center">
+    <Navbar bg="light" variant="light" className="flex-column text-center">
       <Navbar.Brand href="/" className="justify-content-center mb-0 w-100">
          RHINO LOCATIONS
       </Navbar.Brand>
