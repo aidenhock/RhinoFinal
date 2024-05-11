@@ -5,3 +5,4 @@ npm install react-bootstrap bootstrap
 npm install react-router-dom
 npm install firebase
 npm install firebase/storage
+npm install react-image-gallery
